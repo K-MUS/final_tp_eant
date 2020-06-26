@@ -229,48 +229,65 @@ box_eda_attrition <- tabPanel("Attrition",
 # Intro
 #------------------------------------------------------------
 tab_intro <- shinydashboard::tabItem(tabName = "intro",
-                                     h2("Problem"),
-                                     p("The consulting world suffers from high rotation and this represent a problem to the companies"),
-                                     tags$ul(
-                                         tags$li("The market price usually is higher than the average of the company employees"), 
-                                         tags$li("The time that it's spent in training and onboarding of new employee"),
+                                     shinydashboard::box(
+                                       title = "Introduction", width = 12, status = "primary", solidHeader = TRUE,
+                                       h2("Problem"),
+                                       p("The consulting world suffers from high rotation and this represent a big problem to the companies"),
+                                       tags$ul(
+                                         tags$li("The cost of hiring a new person from the market is usually higher than the average of the current resources"), 
+                                         tags$li("The time that it's spent in training and onboarding of new employee represent also a cost" ),
                                          tags$li("When several people leaves an area the others starts to wonder and why a lot of people are leaving"),
-                                     ),
-                                     h2("Benefits of the project"),
-                                     p("Help the companies to detect possible attrition and resign from his employees and also to detect patters on which variables are determinating"),
-                                     h2("Data"),
-                                     p("Help the companies to detect possible attrition and resign from his employees and also to detect patters on which variables are determinating"),                     
+                                       ),
+                                       h2("Benefits of the project"),
+                                       p("Help the companies to detect possible unwanted attrition and resigns from his employees and also detect which variables are the most relevant"),
+                                       h2("Data"),
+                                       p("The well know IBM HR Attrition, which have a fictional database with info related on how \"Happy\" the employee is. The original dataset can be found here "),
+                                       a(href="https://www.kaggle.com/pavansubhasht/ibm-hr-analytics-attrition-dataset", "IBM HR Analytics Employee Attrition & Performance"),                  
+                                       p(""),
+                                       p("In this app the Dataset was already been cleaned discarting fields because there was very simimlar fields or unrelated to the study like:"), 
+                                       tags$ul(
+                                         tags$li("Job Involment"),
+                                         tags$li("Daily Rate"),
+                                         tags$li("Hourly Rate"),
+                                         tags$li("Relationship Satisfaction"),
+                                         tags$li("Over18"),
+                                       )                                       
+                                     )
 )
 
 #------------------------------------------------------------
 # EDA
 #------------------------------------------------------------
 tab_eda <- shinydashboard::tabItem(tabName = "eda",
+                                   shinydashboard::box(
+                                     title = "EDA - Exploratory Data Analysis", width = 12, status = "primary", solidHeader = TRUE,
                                    shinydashboard::tabBox(
-                                       title = "EDA - Exploratory Data Analysis",
-                                       # The id lets us use input$box_eda on the server to find the current tab
+                                       title = "",
                                        id = "box_eda", height = "100%", width = "100%",
                                        box_eda_corr,
                                        box_eda_attrition
                                        # box_eda_monthly,
                                        # tabPanel("Tab2", DT::dataTableOutput("original_datos") )
                                    )
+                                   )
 )
 
 #------------------------------------------------------------
 # Model
 #------------------------------------------------------------
-# tab_model <- tabItem(tabName = "model",
-#                        box(
-#                          title = "Parameters", width = 4, status = "primary", solidHeader = TRUE,
-#                          h2("parameters"),
-#                          verbatimTextOutput("conf_mat_info")
-#                        ),
-#                        box(
-#                          title = "Results", width = 8, status = "primary", solidHeader = TRUE,
-#                          h2("Result")
-#                        )
-# )
+tab_model <- tabItem(tabName = "model",
+                     shinydashboard::box(
+                       title = "Models", width = 12, status = "primary", solidHeader = TRUE,
+                       p("In each of the sub-section you can find the following information regarding the different models"),
+                       tags$ul(
+                         tags$li("ROC Curve"), 
+                         tags$li("Confusion Matrix & General Stadistics" ),
+                         tags$li("Importance of the variable within each model")
+                       ),
+                       p(""),
+                       p("Even though the Random Forest have a better overall performance. The model choosed was Decision Tree because it's really important to interpret and explain the reasons behind the \"Why\" of the prediction besides the dataset also have lots of Categorical variables which this type of model can deal very well"),
+                    )
+)
 #------------------------------------------------------------
 # Model - Decision Tree
 #------------------------------------------------------------
@@ -426,16 +443,40 @@ tab_datos <- shinydashboard::tabItem(tabName = "datos",
                                              DT::DTOutput("original_datos2")
                                          )
                                          # ,width=12)
-                                     )
+                                     ),
+                                     p("Education"),
+                                     tags$ul(
+                                       tags$li("1 'Below College'"),
+                                       tags$li("2 'College'"),
+                                       tags$li("3 'Bachelor'"),
+                                       tags$li("4 'Master'"),
+                                       tags$li("5 'Doctor'"),
+                                     ),
+                                     p(" "),
+                                     p("EnvironmentSatisfaction"),
+                                     tags$ul(
+                                       tags$li("1 'Low'"),
+                                       tags$li("2 'Medium'"),
+                                       tags$li("3 'High'"),
+                                       tags$li("4 'Very High'"),
+                                     ),
+                                     p(" "),
+                                     p("JobSatisfaction"),
+                                     tags$ul(
+                                       tags$li("1 'Low'"),
+                                       tags$li("2 'Medium'"),
+                                       tags$li("3 'High'"),
+                                       tags$li("4 'Very High'"),
+                                     )                                                                              
 )
 
 
 
 sidebar <- shinydashboard::dashboardSidebar(
     shinydashboard::sidebarMenu(
-        shinydashboard::menuItem("Intro", tabName = "intro",icon=icon("file-alt")),
+        shinydashboard::menuItem("Introduction", tabName = "intro",icon=icon("file-alt")),
         shinydashboard::menuItem("EDA", tabName = "eda",icon = icon("chart-bar")),
-        shinydashboard::menuItem("Model", tabName = "model",icon = icon("tree")),
+        shinydashboard::menuItem("Models", tabName = "model",icon = icon("tree")),
         shinydashboard::menuSubItem("Decision Tree", tabName = "model_dt",icon = icon("none")),
         shinydashboard::menuSubItem("Random Forest", tabName = "model_rf",icon = icon("none")),
         shinydashboard::menuItem("Predict", tabName = "predict",icon = icon('dashboard')),
@@ -487,7 +528,7 @@ body <- shinydashboard::dashboardBody(
     shinydashboard::tabItems(
         tab_intro,
         tab_eda,
-        #tab_model,
+        tab_model,
         tab_model_dt,
         tab_model_rf,
         tab_predict,
@@ -853,9 +894,6 @@ server <- shinyServer(function(input, output) {
     outputOptions(output, "corr_clicked", suspendWhenHidden = FALSE)    
 }
 )
-
-
-
 
 # Run the application 
 shinyApp(ui = ui, server = server)

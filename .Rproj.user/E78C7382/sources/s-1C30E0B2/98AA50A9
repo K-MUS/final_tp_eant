@@ -3,19 +3,22 @@
     "path": "D:/GitLocal/final_tp_eant/app.R",
     "project_path": "app.R",
     "type": "r_source",
-    "hash": "3543537686",
+    "hash": "1585243770",
     "contents": "",
     "dirty": false,
     "created": 1592438624034.0,
     "source_on_save": false,
     "relative_order": 1,
-    "properties": {},
+    "properties": {
+        "cursorPosition": "287,91",
+        "scrollLine": "260"
+    },
     "folds": "",
-    "lastKnownWriteTime": 1592437695,
+    "lastKnownWriteTime": 1593130280,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1592437695,
+    "last_content_update": 1593130280227,
     "read_only": false,
     "read_only_alternatives": []
 }
