@@ -60,23 +60,14 @@ test <- df[-trainIndex,]
 #Model Decision tree
 #------------------------------------------------------------
 model_dt <- rpart(Attrition ~ ., data=train)
-model_dt <- rpart(Attrition ~ ., data=train,control=rpart.control(minsplit=10,cp=0.001))
 model_dt
-# plot(model_dt, uniform=TRUE, branch=0.6, margin=0.05)
-# text(model_dt, all=TRUE, use.n=TRUE)
-# 
-# rpart.plot(model_dt, extra=0, type=2)
 
 # Confusion Matrix DT
 conf_mat_dt = predict(model_dt, newdata = test, type = "class") 
-# conf_mat_info_dt <- confusionMatrix(conf_mat_dt ,test$Attrition)
-# conf_mat_info_dt
 
 # ROC Matrix DT
 predict_dt = predict(model_dt, newdata = test, type = "prob")[,1]
 par(pty="s")
-# roc_dt <-  roc(response = test$Attrition, predictor = predict_dt,plot=TRUE, legacy.axes = TRUE, percent = TRUE, xlab= "False Positive Perc.", ylab= "True Positive Perc.",
-#                col="#377EB8",lwd=4, print.auc=TRUE)
 
 #Variable Importance DT
 var_imp <- data.frame(model_dt$variable.importance)
@@ -88,12 +79,6 @@ var_imp$model_dt.variable.importance <- NULL
 colorCount <- length(unique(var_imp$features))
 feature_importance <- var_imp 
 
-# ggplot(feature_importance, aes(x=reorder(features, importance), y=importance, fill=features)) + 
-#   geom_bar(stat='identity') + 
-#   coord_flip() + 
-#   geom_label(aes(label=paste0(importance, "%")), colour = "white", fontface = "italic", hjust=0.6) + 
-#   theme_minimal() +
-#   theme(legend.position="none")
 
 #------------------------------------------------------------
 #Model randomForest
@@ -104,14 +89,9 @@ model_rf
 
 #Confusion Matrix RF
 conf_mat_rf = predict(model_rf, newdata = test, type = "class") 
-# conf_mat_info_rf <- confusionMatrix(conf_mat_rf ,test$Attrition)
-# conf_mat_info_rf
 
 #ROC RF
 predict_rf = predict(model_rf, newdata = test, type = "prob")[,1]
-# par(pty="s")
-# roc(response = test$Attrition, predictor = predict_rf,plot=TRUE, legacy.axes = TRUE, percent = TRUE, xlab= "False Positive Perc.", ylab= "True Positive Perc.",
-#     col="#377EB8",lwd=4, print.auc=TRUE)
 
 #Variable Importance RF
 # randomForest::varImpPlot(model_rf)
@@ -181,50 +161,6 @@ box_eda_attrition <- tabPanel("Attrition",
                               )                        
 )
 
-#------------------------------------------------------------
-# EDA - Monthly Income
-#------------------------------------------------------------
-# box_eda_monthly <- tabPanel("Monthly Income", 
-#                               fluidRow(                         
-#                                 box(
-#                                   title = "Monthy Income by Gender", width = 3, status = "primary", solidHeader = TRUE,
-#                                   plotOutput("eda_monthly_gender", height = "320px"),
-#                                   
-#                                 ),
-#                                 box(
-#                                   title = "Monthy Income (mean) by Job Satisfaction", width = 6, status = "primary", solidHeader = TRUE,
-#                                   plotOutput("eda_monthly_job", height = "320px"),
-# 
-#                                 )
-#                                 # box(
-#                                 #   title = "Gender", width = 3, status = "primary", solidHeader = TRUE,
-#                                 #   plotOutput("eda_attr_gender", height = "320px"),
-#                                 #   
-#                                 # )
-#                               )
-#                               # fluidRow(                         
-#                               #   box(
-#                               #     title = "Attrition by Age", width = 3, status = "primary", solidHeader = TRUE,
-#                               #     plotOutput("eda_attr_age", height = "320px"),
-#                               #     
-#                               #   ),
-#                               #   box(
-#                               #     title = "Attrition by Monthly Income", width = 3, status = "primary", solidHeader = TRUE,
-#                               #     plotOutput("eda_attr_income", height = "320px"),
-#                               #     
-#                               #   ),
-#                               #   box(
-#                               #     title = "Attrition by Distance from Home", width = 3, status = "primary", solidHeader = TRUE,
-#                               #     plotOutput("eda_attr_distance", height = "320px"),
-#                               #     
-#                               #   ),
-#                               #   box(
-#                               #     title = "Attrition by Years Current Manager", width = 3, status = "primary", solidHeader = TRUE,
-#                               #     plotOutput("eda_attr_manager", height = "320px"),
-#                               #     
-#                               #   )
-#                               # )                        
-# )
 #------------------------------------------------------------
 # Intro
 #------------------------------------------------------------
@@ -419,16 +355,22 @@ tab_predict <- shinydashboard::tabItem(tabName = "predict",
                                                       sliderInput("i_totalyworked", "Total Working Years", min = 0, max = 40, value = 18),                                                
                                                       #Training
                                                       sliderInput("i_training", "Training Times Last Year", min = 0, max = 10, value = 2),                                                
+                                                      # radioButtons("r_model", label = h3("Choose Model"),
+                                                      #              choices = list("Decision Tree" = 1, "Random Forest" = 2), 
+                                                      #              selected = 1),                                                      
                                                   ),
                                                   shinydashboard::box(width = NULL,align="center",
                                                                       actionButton("predict", label = "Predict"),                           
                                                   )
                                            ),
                                            column(width = 3,
-                                                  verbatimTextOutput("case")
+                                                  verbatimTextOutput("case"),
+                                                  # shinydashboard::box(width = NULL,align="center",
+                                                  #                     plotOutput("model_tree")                           
+                                                  # )
                                                   # verbatimTextOutput("model")
                                            ),
-                                           shinydashboard::valueBoxOutput("PredictBox", width = 3),                              
+                                           shinydashboard::valueBoxOutput("PredictBox", width = 3),      
                                        )
 )
 
@@ -444,30 +386,36 @@ tab_datos <- shinydashboard::tabItem(tabName = "datos",
                                          )
                                          # ,width=12)
                                      ),
-                                     p("Education"),
-                                     tags$ul(
-                                       tags$li("1 'Below College'"),
-                                       tags$li("2 'College'"),
-                                       tags$li("3 'Bachelor'"),
-                                       tags$li("4 'Master'"),
-                                       tags$li("5 'Doctor'"),
+                                     column( width = 2,
+                                       p("Education"),
+                                       tags$ul(
+                                         tags$li("1 'Below College'"),
+                                         tags$li("2 'College'"),
+                                         tags$li("3 'Bachelor'"),
+                                         tags$li("4 'Master'"),
+                                         tags$li("5 'Doctor'"),
+                                       ),
                                      ),
-                                     p(" "),
-                                     p("EnvironmentSatisfaction"),
-                                     tags$ul(
-                                       tags$li("1 'Low'"),
-                                       tags$li("2 'Medium'"),
-                                       tags$li("3 'High'"),
-                                       tags$li("4 'Very High'"),
+                                     column( width = 2,
+                                             p("EnvironmentSatisfaction"),
+                                             tags$ul(
+                                               tags$li("1 'Low'"),
+                                               tags$li("2 'Medium'"),
+                                               tags$li("3 'High'"),
+                                               tags$li("4 'Very High'"),
+                                             ),                                             
                                      ),
-                                     p(" "),
-                                     p("JobSatisfaction"),
-                                     tags$ul(
-                                       tags$li("1 'Low'"),
-                                       tags$li("2 'Medium'"),
-                                       tags$li("3 'High'"),
-                                       tags$li("4 'Very High'"),
-                                     )                                                                              
+                                     column( width = 2,
+                                             p("JobSatisfaction"),
+                                             tags$ul(
+                                               tags$li("1 'Low'"),
+                                               tags$li("2 'Medium'"),
+                                               tags$li("3 'High'"),
+                                               tags$li("4 'Very High'"),
+                                             ),                                             
+                                     ),
+                                     column( width = 2,
+                                     )
 )
 
 
@@ -721,46 +669,7 @@ server <- shinyServer(function(input, output) {
             ggplot2::theme(legend.position="none")
     })
     
-    # # Monthly Gender
-    # output$eda_monthly_gender <- renderPlot({
-    #     ggplot(df_table(), aes(x=Gender, y=MonthlyIncome, color=Gender, fill=Gender)) + 
-    #         geom_boxplot() + 
-    #         scale_fill_manual(values=c("#fdc5f5", "#59a5d8")) + 
-    #         scale_color_manual(values=c("#f7aef8", "#386fa4")) +
-    #         theme_few() +
-    #         theme(legend.position="none")
-    # })
-    # 
-    # # Monthly Job satisfaction
-    # output$eda_monthly_job <- renderPlot({
-    #     df_tmp <- df_table()
-    #     
-    #     df_tmp$JobSatisfaction <-  ifelse(df$JobSatisfaction == 1, "Low",
-    #                                       ifelse(df$JobSatisfaction == 2 , "Medium",
-    #                                              ifelse(df$JobSatisfaction == 3, "High",
-    #                                                     ifelse(df$JobSatisfaction == 4, "Very High",""))))
-    #     
-    #     df_tmp <- df_tmp %>% select(JobSatisfaction, MonthlyIncome, Attrition) %>% group_by(JobSatisfaction, Attrition) %>%
-    #         summarize(med=median(MonthlyIncome))
-    #     
-    #     ggplot(df_tmp, aes(x=fct_reorder(JobSatisfaction, -med), y=med, color=Attrition)) + 
-    #         geom_point(size=5) +
-    #         geom_line(size=3) +
-    #         geom_segment(aes(x=JobSatisfaction,
-    #                          xend=JobSatisfaction,
-    #                          y=0,
-    #                          yend=med)) +
-    #         facet_wrap(~Attrition) +
-    #         labs(y="Median Income", x="Level of Job Satisfaction") +
-    #         coord_flip() +
-    #         scale_color_manual(values=c("#58FA58", "#FA5858")) +
-    #         geom_text(aes(x=JobSatisfaction, y=0.01, label= paste0("$ ", round(med,2))),
-    #                   hjust=-0.5, vjust=-0.5, size=4,
-    #                   colour="black", fontface="italic",
-    #                   angle=360) +
-    #         theme_few()
-    # })
-    
+
     #------------------------------------------------------------
     # Model
     #------------------------------------------------------------    
@@ -817,7 +726,7 @@ server <- shinyServer(function(input, output) {
         YearsAtCompany        = as.integer(input$i_years_company)
         YearsInCurrentRole    = as.integer(input$i_years_role)
         YearsWithCurrManager  = as.integer(input$i_years_manager)
-        test <- data.frame(Age,               
+        test <- data.frame(Age,     
                            BusinessTravel,
                            Department,            
                            DistanceFromHome,
@@ -846,6 +755,15 @@ server <- shinyServer(function(input, output) {
         pred <- predict(model_dt, newdata = pred_case(), type = "class")
     })
     
+    model_tree <-  eventReactive(input$predict, {
+      prp(model_dt)
+    })
+    
+    output$model_tree <- renderPlot({
+      model_tree()
+    })
+
+        
     output$case <- renderText({
         text <- paste(" Age:", pred_case()[1,1], "\n",
                       "Business Travel:", pred_case()[1,2],"\n",
@@ -884,11 +802,11 @@ server <- shinyServer(function(input, output) {
     # Data
     #------------------------------------------------------------
     output$original_datos = DT::renderDataTable({
-        df_num
+      df_table
     })
     
     output$original_datos2 = DT::renderDT(
-        data_table(), options = list(autoWidth = TRUE,scrollX=TRUE)
+      df_table(), options = list(autoWidth = TRUE,scrollX=TRUE)
     )
     
     outputOptions(output, "corr_clicked", suspendWhenHidden = FALSE)    
@@ -897,3 +815,4 @@ server <- shinyServer(function(input, output) {
 
 # Run the application 
 shinyApp(ui = ui, server = server)
+
